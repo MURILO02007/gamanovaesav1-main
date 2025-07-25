@@ -28,9 +28,6 @@
             background-color: #1a3e72;
             color: white;
         }
-        .table-responsive {
-            overflow-x: auto;
-        }
         #imagePreview {
             max-height: 200px;
             display: none;
@@ -55,12 +52,6 @@
             display: flex;
             gap: 8px;
         }
-        .product-image {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
         .loading-spinner {
             display: inline-block;
             width: 20px;
@@ -73,23 +64,26 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
-        .logo-img {
-            height: 40px;
-            width: auto;
-            filter: 
-                brightness(0) 
-                invert(11%) 
-                sepia(94%) 
-                saturate(2592%) 
-                hue-rotate(349deg) 
-                brightness(89%) 
-                contrast(91%);
-        }
-
         .logo-img {
             height: 80px;
             width: auto;
+        }
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .action-btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .search-input {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z' clip-rule='evenodd' /%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.25rem;
         }
     </style>
 </head>
@@ -119,9 +113,7 @@
         <header class="bg-white shadow-sm p-4 flex justify-between items-center">
             <h1 class="text-xl font-bold text-gray-800">Cadastro de Produtos</h1>
             <div class="flex items-center space-x-4">
-                <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
-                    Sair <i class="fas fa-sign-out-alt ml-1"></i>
-                </button>
+                <a href="index.html" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">Sair <i class="fas fa-sign-out-alt ml-1"></i></a>
             </div>
         </header>
 
@@ -141,20 +133,11 @@
                             <input type="text" id="productName" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label for="productPrice" class="block text-sm font-medium text-gray-700 mb-1">Preço*</label>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2">R$</span>
-                                    <input type="number" id="productPrice" step="0.01" min="0.01" class="w-full border border-gray-300 rounded-lg px-8 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                </div>
-                            </div>
-                            <div>
-                                <label for="productOldPrice" class="block text-sm font-medium text-gray-700 mb-1">Preço Antigo</label>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-2">R$</span>
-                                    <input type="number" id="productOldPrice" step="0.01" min="0" class="w-full border border-gray-300 rounded-lg px-8 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </div>
+                        <div class="mb-4">
+                            <label for="productPrice" class="block text-sm font-medium text-gray-700 mb-1">Preço*</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2">R$</span>
+                                <input type="number" id="productPrice" step="0.01" min="0.01" class="w-full border border-gray-300 rounded-lg px-8 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
                         </div>
                         
@@ -166,6 +149,7 @@
                                 <option value="eletrica">Elétrica</option>
                                 <option value="tintas">Tintas</option>
                                 <option value="massas">Massas</option>
+                                <option value="hidraulica">Hidráulica</option>
                             </select>
                         </div>
                     </div>
@@ -193,15 +177,6 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="mb-4">
-                            <label for="productStatus" class="block text-sm font-medium text-gray-700 mb-1">Status*</label>
-                            <select id="productStatus" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                <option value="active">Ativo</option>
-                                <option value="inactive">Inativo</option>
-                                <option value="draft">Rascunho</option>
-                            </select>
-                        </div>
                     </div>
                     
                     <!-- Full Width Actions -->
@@ -215,550 +190,455 @@
                     </div>
                 </form>
             </div>
-            
+
             <!-- Products List -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-4">
                     <h2 class="text-lg font-bold text-gray-800">Produtos Cadastrados</h2>
-                    <div class="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-3 w-full md:w-auto">
-                        <div class="relative w-full md:w-auto">
-                            <input type="text" id="searchInput" placeholder="Buscar produto..." class="w-full border border-gray-300 rounded-lg px-3 py-2 pl-8 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                        <div class="relative flex-1 md:w-64">
+                            <input type="text" id="searchInput" placeholder="Pesquisar produtos..." 
+                                   class="search-input w-full border border-gray-300 rounded-lg px-3 py-2 pl-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
-                        <select id="statusFilter" class="w-full md:w-auto border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="all">Todos</option>
-                            <option value="active">Ativos</option>
-                            <option value="inactive">Inativos</option>
-                        </select>
+                        <div class="relative w-full md:w-48">
+                            <select id="categoryFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Todas as categorias</option>
+                                <option value="ferramentas">Ferramentas</option>
+                                <option value="eletrica">Elétrica</option>
+                                <option value="tintas">Tintas</option>
+                                <option value="massas">Massas</option>
+                                <option value="hidraulica">Hidráulica</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="table-responsive">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="text-left border-b border-gray-200 text-gray-500 text-sm">
-                                <th class="pb-2">Imagem</th>
-                                <th class="pb-2">Nome</th>
-                                <th class="pb-2">Categoria</th>
-                                <th class="pb-2">Preço</th>
-                                <th class="pb-2">Status</th>
-                                <th class="pb-2">Ações</th>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Imagem</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preço</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="productsTableBody">
-                            <tr>
-                                <td colspan="6" class="py-4 text-center text-gray-500">
-                                    <div class="inline-block mr-2">
-                                        <div class="loading-spinner"></div>
-                                    </div>
-                                    Carregando produtos...
-                                </td>
-                            </tr>
+                        <tbody id="productsTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Produtos serão inseridos aqui via JavaScript -->
                         </tbody>
                     </table>
                 </div>
-                
-                <div class="flex flex-col md:flex-row justify-between items-center mt-4 gap-4">
-                    <div class="text-sm text-gray-500">
-                        Mostrando <span id="showingFrom">0</span> a <span id="showingTo">0</span> de <span id="totalProducts">0</span> produtos
-                    </div>
-                    <div class="flex space-x-1 pagination">
-                        <button class="px-3 py-1 border rounded hover:bg-gray-100">&laquo;</button>
-                        <button class="px-3 py-1 border rounded bg-blue-600 text-white">1</button>
-                        <button class="px-3 py-1 border rounded hover:bg-gray-100">2</button>
-                        <button class="px-3 py-1 border rounded hover:bg-gray-100">3</button>
-                        <button class="px-3 py-1 border rounded hover:bg-gray-100">&raquo;</button>
+
+                <div id="loadingProducts" class="text-center py-8">
+                    <div class="inline-block">
+                        <div class="loading-spinner"></div>
+                        <span class="ml-2">Carregando produtos...</span>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Modal de Confirmação -->
-    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg w-full max-w-md">
-            <div class="p-4 border-b border-gray-200">
-                <h3 class="text-lg font-bold text-gray-800">Confirmar Exclusão</h3>
-            </div>
-            <div class="p-4">
-                <p>Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.</p>
-            </div>
-            <div class="p-4 border-t border-gray-200 flex justify-end space-x-3">
-                <button id="cancelDelete" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg">
-                    Cancelar
-                </button>
-                <button id="confirmDelete" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
-                    Excluir
-                </button>
+                <div id="noProductsMessage" class="text-center py-8 hidden">
+                    <i class="fas fa-box-open text-gray-400 text-4xl mb-2"></i>
+                    <p class="text-gray-500">Nenhum produto cadastrado ainda.</p>
+                </div>
+
+                <div id="noSearchResults" class="text-center py-8 hidden">
+                    <i class="fas fa-search text-gray-400 text-4xl mb-2"></i>
+                    <p class="text-gray-500">Nenhum produto encontrado com o termo pesquisado.</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyCxODCfeeBts6LH4B9_ejWzQqOCaoWP_RE",
-            authDomain: "produtos-gama-novaes.firebaseapp.com",
-            projectId: "produtos-gama-novaes",
-            storageBucket: "produtos-gama-novaes.appspot.com",
-            messagingSenderId: "964585446700",
-            appId: "1:964585446700:web:bd30f27bedbba476196089",
-            measurementId: "G-06PV35C59Q"
-        };
+    // Configuração do Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyCxODCfeeBts6LH4B9_ejWzQqOCaoWP_RE",
+        authDomain: "produtos-gama-novaes.firebaseapp.com",
+        projectId: "produtos-gama-novaes",
+        storageBucket: "produtos-gama-novaes.appspot.com",
+        messagingSenderId: "964585446700",
+        appId: "1:964585446700:web:bd30f27bedbba476196089",
+        measurementId: "G-06PV35C59Q"
+    };
 
-        // Inicialização do Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    // Inicialização do Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-        // Elementos DOM
-        const elements = {
-            productForm: document.getElementById('productForm'),
-            productName: document.getElementById('productName'),
-            productPrice: document.getElementById('productPrice'),
-            productOldPrice: document.getElementById('productOldPrice'),
-            productCategory: document.getElementById('productCategory'),
-            productStatus: document.getElementById('productStatus'),
-            imageUrl: document.getElementById('imageUrl'),
-            imagePreview: document.getElementById('imagePreview'),
-            previewImageBtn: document.getElementById('previewImageBtn'),
-            productsTableBody: document.getElementById('productsTableBody'),
-            searchInput: document.getElementById('searchInput'),
-            statusFilter: document.getElementById('statusFilter'),
-            showingFrom: document.getElementById('showingFrom'),
-            showingTo: document.getElementById('showingTo'),
-            totalProducts: document.getElementById('totalProducts'),
-            submitBtn: document.getElementById('submitBtn'),
-            cancelBtn: document.getElementById('cancelBtn'),
-            alertMessage: document.getElementById('alertMessage'),
-            confirmModal: document.getElementById('confirmModal'),
-            cancelDelete: document.getElementById('cancelDelete'),
-            confirmDelete: document.getElementById('confirmDelete'),
-            logoutBtn: document.getElementById('logoutBtn'),
-            formTitle: document.getElementById('formTitle')
-        };
+    // Elementos DOM
+    const elements = {
+        productForm: document.getElementById('productForm'),
+        productName: document.getElementById('productName'),
+        productPrice: document.getElementById('productPrice'),
+        productCategory: document.getElementById('productCategory'),
+        imageUrl: document.getElementById('imageUrl'),
+        imagePreview: document.getElementById('imagePreview'),
+        previewImageBtn: document.getElementById('previewImageBtn'),
+        submitBtn: document.getElementById('submitBtn'),
+        cancelBtn: document.getElementById('cancelBtn'),
+        alertMessage: document.getElementById('alertMessage'),
+        formTitle: document.getElementById('formTitle'),
+        productsTableBody: document.getElementById('productsTableBody'),
+        loadingProducts: document.getElementById('loadingProducts'),
+        noProductsMessage: document.getElementById('noProductsMessage'),
+        noSearchResults: document.getElementById('noSearchResults'),
+        categoryFilter: document.getElementById('categoryFilter'),
+        searchInput: document.getElementById('searchInput')
+    };
 
-        // Estado da aplicação
-        const state = {
-            products: [],
-            filteredProducts: [],
-            currentPage: 1,
-            productsPerPage: 10,
-            productToDelete: null,
-            editingProductId: null,
-            unsubscribeProducts: null
-        };
+    // Estado da aplicação
+    const state = {
+        editingProductId: null,
+        products: [],
+        filteredProducts: [],
+        unsubscribeProducts: null,
+        currentCategory: '',
+        currentSearch: ''
+    };
 
-        // Utilitários
-        const utils = {
-            showAlert: (message, type = 'success') => {
-                elements.alertMessage.textContent = message;
-                elements.alertMessage.className = `alert alert-${type}`;
-                elements.alertMessage.style.display = 'block';
-                
-                setTimeout(() => {
-                    elements.alertMessage.style.display = 'none';
-                }, 5000);
-            },
+    // Utilitários
+    const utils = {
+        showAlert: (message, type = 'success') => {
+            elements.alertMessage.textContent = message;
+            elements.alertMessage.className = `alert alert-${type}`;
+            elements.alertMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                elements.alertMessage.style.display = 'none';
+            }, 5000);
+        },
 
-            isValidUrl: (url) => {
-                try {
-                    new URL(url);
-                    return true;
-                } catch {
-                    return false;
-                }
-            },
-
-            formatPrice: (price) => {
-                return parseFloat(price || 0).toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL',
-                    minimumFractionDigits: 2
-                });
-            },
-
-            getCategoryName: (category) => {
-                const categories = {
-                    'ferramentas': 'Ferramentas',
-                    'eletrica': 'Elétrica',
-                    'tintas': 'Tintas',
-                    'massas': 'Massas'
-                };
-                return categories[category] || category;
-            },
-
-            getStatusName: (status) => {
-                const statuses = {
-                    'active': 'Ativo',
-                    'inactive': 'Inativo',
-                    'draft': 'Rascunho'
-                };
-                return statuses[status] || status;
-            },
-
-            getStatusClass: (status) => {
-                const classes = {
-                    'active': 'bg-green-100 text-green-800',
-                    'inactive': 'bg-red-100 text-red-800',
-                    'draft': 'bg-yellow-100 text-yellow-800'
-                };
-                return `${classes[status] || 'bg-gray-100 text-gray-800'} text-xs px-2 py-1 rounded`;
-            },
-
-            resetForm: () => {
-                elements.productForm.reset();
-                elements.imagePreview.style.display = 'none';
-                elements.imagePreview.src = '';
-                state.editingProductId = null;
-                elements.submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Salvar Produto';
-                elements.formTitle.textContent = 'Cadastrar Novo Produto';
-                elements.submitBtn.disabled = false;
-            },
-
-            showLoading: () => {
-                elements.productsTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="py-4 text-center text-gray-500">
-                            <div class="inline-block mr-2">
-                                <div class="loading-spinner"></div>
-                            </div>
-                            Carregando produtos...
-                        </td>
-                    </tr>
-                `;
-            },
-
-            validateProduct: (productData) => {
-                const errors = [];
-                
-                if (!productData.name || productData.name.length < 3) {
-                    errors.push('Nome do produto deve ter pelo menos 3 caracteres');
-                }
-
-                if (isNaN(productData.price) || productData.price <= 0) {
-                    errors.push('Preço deve ser um valor maior que zero');
-                }
-
-                if (productData.oldPrice > 0 && productData.oldPrice <= productData.price) {
-                    errors.push('Preço antigo deve ser maior que o preço atual');
-                }
-
-                if (!productData.category) {
-                    errors.push('Selecione uma categoria');
-                }
-
-                if (!utils.isValidUrl(productData.imageUrl)) {
-                    errors.push('URL da imagem inválida');
-                }
-
-                return errors;
+        isValidUrl: (url) => {
+            try {
+                new URL(url);
+                return true;
+            } catch {
+                return false;
             }
-        };
+        },
 
-        // Operações de Produto
-        const productOperations = {
-            loadProducts: () => {
-                utils.showLoading();
-                
-                state.unsubscribeProducts = db.collection('products')
-                    .orderBy('createdAt', 'desc')
-                    .onSnapshot(
-                        (snapshot) => {
-                            state.products = snapshot.docs.map(doc => ({
-                                id: doc.id,
-                                ...doc.data(),
-                                createdAt: doc.data().createdAt?.toDate() || new Date()
-                            }));
-                            
-                            productOperations.filterProducts();
-                            productOperations.updatePagination();
-                        },
-                        (error) => {
-                            console.error('Erro ao carregar produtos:', error);
-                            utils.showAlert('Erro ao carregar produtos. Tente recarregar a página.', 'error');
-                        }
-                    );
-            },
+        resetForm: () => {
+            elements.productForm.reset();
+            elements.imagePreview.style.display = 'none';
+            elements.imagePreview.src = '';
+            state.editingProductId = null;
+            elements.submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Salvar Produto';
+            elements.formTitle.textContent = 'Cadastrar Novo Produto';
+            elements.submitBtn.disabled = false;
+        },
 
-            saveProduct: async (productData) => {
-                try {
-                    elements.submitBtn.disabled = true;
-                    elements.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processando...';
-
-                    const productToSave = {
-                        ...productData,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-
-                    if (!state.editingProductId) {
-                        productToSave.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                        await db.collection('products').add(productToSave);
-                        utils.showAlert('Produto cadastrado com sucesso!');
-                    } else {
-                        await db.collection('products').doc(state.editingProductId).update(productToSave);
-                        utils.showAlert('Produto atualizado com sucesso!');
-                    }
-                    
-                    utils.resetForm();
-                } catch (error) {
-                    console.error('Erro ao salvar produto:', error);
-                    utils.showAlert(`Erro ao salvar produto: ${error.message}`, 'error');
-                } finally {
-                    elements.submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Salvar Produto';
-                }
-            },
-
-            deleteProduct: async (productId) => {
-                try {
-                    await db.collection('products').doc(productId).delete();
-                    utils.showAlert('Produto excluído com sucesso!');
-                } catch (error) {
-                    console.error('Erro ao excluir produto:', error);
-                    utils.showAlert('Erro ao excluir produto', 'error');
-                }
-            },
-
-            filterProducts: () => {
-                const searchTerm = elements.searchInput.value.toLowerCase();
-                const statusFilter = elements.statusFilter.value;
-                
-                state.filteredProducts = state.products.filter(product => {
-                    const matchesSearch = product.name.toLowerCase().includes(searchTerm);
-                    const matchesStatus = statusFilter === 'all' || product.status === statusFilter;
-                    return matchesSearch && matchesStatus;
-                });
-                
-                productOperations.renderProducts();
-                productOperations.updatePagination();
-            },
-
-            renderProducts: () => {
-                if (state.filteredProducts.length === 0) {
-                    elements.productsTableBody.innerHTML = `
-                        <tr>
-                            <td colspan="6" class="py-4 text-center text-gray-500">
-                                Nenhum produto encontrado
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-                
-                const startIndex = (state.currentPage - 1) * state.productsPerPage;
-                const paginatedProducts = state.filteredProducts.slice(
-                    startIndex, 
-                    startIndex + state.productsPerPage
-                );
-                
-                elements.productsTableBody.innerHTML = paginatedProducts.map(product => `
-                    <tr class="border-b border-gray-100 hover:bg-gray-50">
-                        <td class="py-3">
-                            <img src="${product.imageUrl}" alt="${product.name}" 
-                                 class="product-image" 
-                                 onerror="this.onerror=null;this.src='https://via.placeholder.com/60?text=Imagem'">
-                        </td>
-                        <td class="py-3 font-medium">${product.name}</td>
-                        <td class="py-3 text-gray-500">${utils.getCategoryName(product.category)}</td>
-                        <td class="py-3">
-                            ${product.oldPrice > 0 ? 
-                                `<span class="text-gray-400 line-through mr-2">${utils.formatPrice(product.oldPrice)}</span>` : 
-                                ''}
-                            <span class="font-medium">${utils.formatPrice(product.price)}</span>
-                        </td>
-                        <td class="py-3">
-                            <span class="${utils.getStatusClass(product.status)}">
-                                ${utils.getStatusName(product.status)}
-                            </span>
-                        </td>
-                        <td class="py-3">
-                            <div class="flex space-x-2">
-                                <button class="edit-btn text-blue-600 hover:text-blue-800" data-id="${product.id}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="delete-btn text-red-600 hover:text-red-800" data-id="${product.id}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `).join('');
-
-                // Adiciona eventos aos botões
-                document.querySelectorAll('.edit-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const productId = btn.dataset.id;
-                        productOperations.editProduct(productId);
-                    });
-                });
-                
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const productId = btn.dataset.id;
-                        productOperations.showDeleteModal(productId);
-                    });
-                });
-            },
-
-            editProduct: async (productId) => {
-                try {
-                    const doc = await db.collection('products').doc(productId).get();
-                    
-                    if (!doc.exists) {
-                        utils.showAlert('Produto não encontrado', 'error');
-                        return;
-                    }
-                    
-                    const product = doc.data();
-                    
-                    // Preencher formulário
-                    elements.productName.value = product.name || '';
-                    elements.productPrice.value = product.price || '';
-                    elements.productOldPrice.value = product.oldPrice || '';
-                    elements.productCategory.value = product.category || '';
-                    elements.productStatus.value = product.status || 'active';
-                    elements.imageUrl.value = product.imageUrl || '';
-                    
-                    // Carregar imagem
-                    if (product.imageUrl) {
-                        elements.imagePreview.src = product.imageUrl;
-                        elements.imagePreview.style.display = 'block';
-                    }
-                    
-                    // Setar ID para edição
-                    state.editingProductId = productId;
-                    
-                    // Atualizar UI
-                    elements.submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Atualizar Produto';
-                    elements.formTitle.textContent = 'Editar Produto';
-                    
-                    // Scroll para o formulário
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    
-                } catch (error) {
-                    console.error('Erro ao carregar produto:', error);
-                    utils.showAlert('Erro ao carregar produto para edição', 'error');
-                }
-            },
-
-            showDeleteModal: (productId) => {
-                state.productToDelete = productId;
-                elements.confirmModal.classList.remove('hidden');
-            },
-
-            updatePagination: () => {
-                const totalPages = Math.ceil(state.filteredProducts.length / state.productsPerPage);
-                
-                // Atualiza contadores
-                elements.totalProducts.textContent = state.filteredProducts.length;
-                
-                const startItem = (state.currentPage - 1) * state.productsPerPage + 1;
-                const endItem = Math.min(
-                    state.currentPage * state.productsPerPage, 
-                    state.filteredProducts.length
-                );
-                
-                elements.showingFrom.textContent = startItem;
-                elements.showingTo.textContent = endItem;
-                
-                // TODO: Implementar lógica de paginação completa
+        validateProduct: (productData) => {
+            const errors = [];
+            
+            if (!productData.name || productData.name.length < 3) {
+                errors.push('Nome do produto deve ter pelo menos 3 caracteres');
             }
-        };
 
-        // Event Handlers
-        const setupEventListeners = () => {
-            // Preview da imagem
-            elements.previewImageBtn.addEventListener('click', () => {
-                const url = elements.imageUrl.value.trim();
-                if (!url) {
-                    utils.showAlert('Por favor, insira uma URL de imagem', 'error');
-                    return;
-                }
+            if (isNaN(productData.price) || productData.price <= 0) {
+                errors.push('Preço deve ser um valor maior que zero');
+            }
+
+            if (!productData.category) {
+                errors.push('Selecione uma categoria');
+            }
+
+            if (!utils.isValidUrl(productData.imageUrl)) {
+                errors.push('URL da imagem inválida');
+            }
+
+            return errors;
+        },
+
+        formatPrice: (price) => {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(price);
+        },
+
+        translateCategory: (category) => {
+            const categories = {
+                'ferramentas': 'Ferramentas',
+                'eletrica': 'Elétrica',
+                'tintas': 'Tintas',
+                'massas': 'Massas',
+                'hidraulica': 'Hidráulica'
+            };
+            return categories[category] || category;
+        },
+
+        filterProducts: () => {
+            state.filteredProducts = state.products.filter(product => {
+                const matchesCategory = !state.currentCategory || product.category === state.currentCategory;
+                const matchesSearch = !state.currentSearch || 
+                    product.name.toLowerCase().includes(state.currentSearch.toLowerCase()) ||
+                    product.category.toLowerCase().includes(state.currentSearch.toLowerCase());
                 
-                if (utils.isValidUrl(url)) {
-                    elements.imagePreview.src = url;
-                    elements.imagePreview.style.display = 'block';
-                    utils.showAlert('Imagem carregada com sucesso!');
+                return matchesCategory && matchesSearch;
+            });
+
+            productOperations.renderProducts(state.filteredProducts);
+        }
+    };
+
+    // Operações de Produto
+    const productOperations = {
+        saveProduct: async (productData) => {
+            try {
+                elements.submitBtn.disabled = true;
+                elements.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processando...';
+
+                const productToSave = {
+                    name: productData.name,
+                    price: parseFloat(productData.price),
+                    category: productData.category,
+                    imageUrl: productData.imageUrl,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                if (!state.editingProductId) {
+                    productToSave.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await db.collection('products').add(productToSave);
+                    utils.showAlert('Produto cadastrado com sucesso!');
                 } else {
-                    utils.showAlert('URL inválida. Por favor, insira uma URL válida', 'error');
+                    await db.collection('products').doc(state.editingProductId).update(productToSave);
+                    utils.showAlert('Produto atualizado com sucesso!');
                 }
-            });
-
-            // Formulário de produto
-            elements.productForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
                 
-                const productData = {
-                    name: elements.productName.value.trim(),
-                    price: parseFloat(elements.productPrice.value),
-                    oldPrice: elements.productOldPrice.value ? parseFloat(elements.productOldPrice.value) : 0,
-                    category: elements.productCategory.value,
-                    status: elements.productStatus.value,
-                    imageUrl: elements.imageUrl.value.trim()
-                };
+                utils.resetForm();
+            } catch (error) {
+                console.error('Erro ao salvar produto:', error);
+                utils.showAlert(`Erro ao salvar produto: ${error.message}`, 'error');
+            } finally {
+                elements.submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Salvar Produto';
+                elements.submitBtn.disabled = false;
+            }
+        },
 
-                const errors = utils.validateProduct(productData);
-                if (errors.length > 0) {
-                    errors.forEach(error => utils.showAlert(error, 'error'));
-                    return;
-                }
+        deleteProduct: async (productId) => {
+            if (!confirm('Tem certeza que deseja excluir este produto?')) {
+                return;
+            }
 
-                await productOperations.saveProduct(productData);
-            });
+            try {
+                await db.collection('products').doc(productId).delete();
+                utils.showAlert('Produto excluído com sucesso!');
+            } catch (error) {
+                console.error('Erro ao excluir produto:', error);
+                utils.showAlert(`Erro ao excluir produto: ${error.message}`, 'error');
+            }
+        },
 
-            // Cancelar edição
-            elements.cancelBtn.addEventListener('click', utils.resetForm);
-
-            // Filtros
-            elements.searchInput.addEventListener('input', () => {
-                state.currentPage = 1;
-                productOperations.filterProducts();
-            });
-
-            elements.statusFilter.addEventListener('change', () => {
-                state.currentPage = 1;
-                productOperations.filterProducts();
-            });
-
-            // Modal de confirmação
-            elements.cancelDelete.addEventListener('click', () => {
-                elements.confirmModal.classList.add('hidden');
-                state.productToDelete = null;
-            });
-
-            elements.confirmDelete.addEventListener('click', async () => {
-                if (state.productToDelete) {
-                    elements.confirmModal.classList.add('hidden');
-                    await productOperations.deleteProduct(state.productToDelete);
-                    state.productToDelete = null;
-                }
-            });
-
-            // Logout (removido o redirecionamento)
-            elements.logoutBtn.addEventListener('click', async () => {
-                try {
-                    utils.showAlert('Funcionalidade de logout desativada nesta versão', 'error');
-                } catch (error) {
-                    console.error('Erro:', error);
-                    utils.showAlert('Erro', 'error');
-                }
-            });
-
-            // Limpar subscription ao sair
-            window.addEventListener('beforeunload', () => {
+        loadProducts: () => {
+            try {
+                // Cancela a inscrição anterior se existir
                 if (state.unsubscribeProducts) {
                     state.unsubscribeProducts();
                 }
+
+                elements.loadingProducts.classList.remove('hidden');
+                elements.productsTableBody.innerHTML = '';
+                elements.noProductsMessage.classList.add('hidden');
+                elements.noSearchResults.classList.add('hidden');
+
+                let query = db.collection('products').orderBy('createdAt', 'desc');
+
+                // Usando onSnapshot para atualização em tempo real
+                state.unsubscribeProducts = query.onSnapshot((snapshot) => {
+                    state.products = [];
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        state.products.push({
+                            id: doc.id,
+                            name: data.name,
+                            price: data.price,
+                            category: data.category,
+                            imageUrl: data.imageUrl,
+                            createdAt: data.createdAt,
+                            updatedAt: data.updatedAt
+                        });
+                    });
+
+                    console.log('Produtos carregados:', state.products);
+
+                    if (state.products.length === 0) {
+                        elements.noProductsMessage.classList.remove('hidden');
+                    } else {
+                        utils.filterProducts();
+                    }
+                    
+                    elements.loadingProducts.classList.add('hidden');
+                }, (error) => {
+                    console.error('Erro ao carregar produtos:', error);
+                    utils.showAlert(`Erro ao carregar produtos: ${error.message}`, 'error');
+                    elements.loadingProducts.classList.add('hidden');
+                });
+
+            } catch (error) {
+                console.error('Erro ao carregar produtos:', error);
+                utils.showAlert(`Erro ao carregar produtos: ${error.message}`, 'error');
+                elements.loadingProducts.classList.add('hidden');
+            }
+        },
+
+        renderProducts: (products) => {
+            elements.productsTableBody.innerHTML = '';
+            elements.noProductsMessage.classList.add('hidden');
+            elements.noSearchResults.classList.add('hidden');
+
+            if (products.length === 0) {
+                if (state.currentSearch || state.currentCategory) {
+                    elements.noSearchResults.classList.remove('hidden');
+                } else {
+                    elements.noProductsMessage.classList.remove('hidden');
+                }
+                return;
+            }
+
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/60?text=Sem+Imagem'">
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${product.name}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${utils.formatPrice(product.price)}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${utils.translateCategory(product.category)}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <button class="edit-btn action-btn bg-blue-500 hover:bg-blue-600 text-white mr-2" data-id="${product.id}">
+                            <i class="fas fa-edit mr-1"></i>Editar
+                        </button>
+                        <button class="delete-btn action-btn bg-red-500 hover:bg-red-600 text-white" data-id="${product.id}">
+                            <i class="fas fa-trash-alt mr-1"></i>Excluir
+                        </button>
+                    </td>
+                `;
+
+                elements.productsTableBody.appendChild(row);
             });
-        };
 
-        // Inicialização
-        const init = () => {
-            setupEventListeners();
-            productOperations.loadProducts();
-        };
+            // Adiciona event listeners aos botões de edição
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const productId = e.currentTarget.dataset.id;
+                    productOperations.editProduct(productId);
+                });
+            });
 
-        // Inicia a aplicação
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+            // Adiciona event listeners aos botões de exclusão
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const productId = e.currentTarget.dataset.id;
+                    productOperations.deleteProduct(productId);
+                });
+            });
+        },
+
+        editProduct: (productId) => {
+            const product = state.products.find(p => p.id === productId);
+            if (!product) return;
+
+            state.editingProductId = productId;
+            elements.productName.value = product.name;
+            elements.productPrice.value = product.price;
+            elements.productCategory.value = product.category;
+            elements.imageUrl.value = product.imageUrl;
+            elements.imagePreview.src = product.imageUrl;
+            elements.imagePreview.style.display = 'block';
+
+            elements.formTitle.textContent = 'Editar Produto';
+            elements.submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Atualizar Produto';
+            
+            // Rolagem suave para o formulário
+            elements.productForm.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    // Event Handlers
+    const setupEventListeners = () => {
+        // Preview da imagem
+        elements.previewImageBtn.addEventListener('click', () => {
+            const url = elements.imageUrl.value.trim();
+            if (!url) {
+                utils.showAlert('Por favor, insira uma URL de imagem', 'error');
+                return;
+            }
+            
+            if (utils.isValidUrl(url)) {
+                elements.imagePreview.src = url;
+                elements.imagePreview.style.display = 'block';
+                utils.showAlert('Imagem carregada com sucesso!');
+            } else {
+                utils.showAlert('URL inválida. Por favor, insira uma URL válida', 'error');
+            }
+        });
+
+        // Formulário de produto
+        elements.productForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const productData = {
+                name: elements.productName.value.trim(),
+                price: parseFloat(elements.productPrice.value),
+                category: elements.productCategory.value,
+                imageUrl: elements.imageUrl.value.trim()
+            };
+
+            const errors = utils.validateProduct(productData);
+            if (errors.length > 0) {
+                errors.forEach(error => utils.showAlert(error, 'error'));
+                return;
+            }
+
+            await productOperations.saveProduct(productData);
+        });
+
+        // Cancelar edição
+        elements.cancelBtn.addEventListener('click', () => {
+            utils.resetForm();
+        });
+
+        // Filtro de categoria
+        elements.categoryFilter.addEventListener('change', () => {
+            state.currentCategory = elements.categoryFilter.value;
+            utils.filterProducts();
+        });
+
+        // Busca de produtos
+        elements.searchInput.addEventListener('input', () => {
+            state.currentSearch = elements.searchInput.value.trim();
+            utils.filterProducts();
+        });
+
+        // Logout (removido o redirecionamento)
+        document.querySelector('[href="index.html"]').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                utils.showAlert('Funcionalidade de logout desativada nesta versão', 'error');
+            } catch (error) {
+                console.error('Erro:', error);
+                utils.showAlert('Erro', 'error');
+            }
+        });
+    };
+
+    // Inicialização
+    const init = async () => {
+        setupEventListeners();
+        productOperations.loadProducts();
+    };
+
+    // Inicia a aplicação
+    document.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>
