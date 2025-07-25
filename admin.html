@@ -19,10 +19,25 @@
         .sidebar {
             width: 250px;
             transition: all 0.3s;
+            position: fixed;
+            height: 100vh;
+            z-index: 50;
+            left: -250px;
+        }
+        .sidebar.active {
+            left: 0;
         }
         .main-content {
-            margin-left: 250px;
+            margin-left: 0;
             transition: all 0.3s;
+        }
+        @media (min-width: 1024px) {
+            .sidebar {
+                left: 0;
+            }
+            .main-content {
+                margin-left: 250px;
+            }
         }
         .active-nav {
             background-color: #1a3e72;
@@ -85,13 +100,33 @@
             background-position: right 0.5rem center;
             background-size: 1.25rem;
         }
+        .mobile-menu-btn {
+            display: block;
+        }
+        @media (min-width: 1024px) {
+            .mobile-menu-btn {
+                display: none;
+            }
+        }
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
     <!-- Sidebar -->
-    <div class="sidebar bg-white shadow-md fixed h-full z-10">
+    <div class="sidebar bg-white shadow-md">
         <div class="p-4 border-b border-gray-200 flex items-center justify-between">
             <span class="text-xl font-bold text-gray-800">Admin</span>
+            <button class="mobile-menu-btn lg:hidden text-gray-500" id="closeSidebar">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
         <div class="p-4 border-b border-gray-200 flex items-center justify-center">
             <img class="logo-img" src="logogamanovaes_branca.png" alt="Logo">
@@ -111,96 +146,95 @@
     <!-- Main Content -->
     <div class="main-content min-h-screen">
         <header class="bg-white shadow-sm p-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-gray-800">Cadastro de Produtos</h1>
+            <div class="flex items-center">
+                <button class="mobile-menu-btn mr-4 text-gray-600" id="openSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="text-xl font-bold text-gray-800">Cadastro de Produtos</h1>
+            </div>
             <div class="flex items-center space-x-4">
                 <a href="index.html" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">Sair <i class="fas fa-sign-out-alt ml-1"></i></a>
             </div>
         </header>
 
-        <div class="p-6">
+        <div class="p-4 lg:p-6">
             <!-- Alert Messages -->
             <div id="alertMessage" class="alert"></div>
 
             <!-- Product Form -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-6">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 lg:p-6 mb-6">
                 <h2 class="text-lg font-bold text-gray-800 mb-4" id="formTitle">Cadastrar Novo Produto</h2>
                 
-                <form id="productForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Left Column -->
-                    <div>
-                        <div class="mb-4">
-                            <label for="productName" class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto*</label>
-                            <input type="text" id="productName" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="productPrice" class="block text-sm font-medium text-gray-700 mb-1">Preço*</label>
-                            <div class="relative">
-                                <span class="absolute left-3 top-2">R$</span>
-                                <input type="number" id="productPrice" step="0.01" min="0.01" class="w-full border border-gray-300 rounded-lg px-8 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="productCategory" class="block text-sm font-medium text-gray-700 mb-1">Categoria*</label>
-                            <select id="productCategory" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                <option value="">Selecione...</option>
-                                <option value="ferramentas">Ferramentas</option>
-                                <option value="eletrica">Elétrica</option>
-                                <option value="tintas">Tintas</option>
-                                <option value="massas">Massas</option>
-                                <option value="hidraulica">Hidráulica</option>
-                            </select>
+                <form id="productForm" class="grid grid-cols-1 gap-6">
+                    <div class="mb-4">
+                        <label for="productName" class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto*</label>
+                        <input type="text" id="productName" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="productPrice" class="block text-sm font-medium text-gray-700 mb-1">Preço*</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2">R$</span>
+                            <input type="number" id="productPrice" step="0.01" min="0.01" class="w-full border border-gray-300 rounded-lg px-8 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         </div>
                     </div>
                     
-                    <!-- Right Column -->
-                    <div>
-                        <div class="mb-4">
-                            <label for="imageUrl" class="block text-sm font-medium text-gray-700 mb-1">URL da Imagem*</label>
-                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4">
-                                <div class="image-input-container mb-3">
-                                    <input type="url" id="imageUrl" placeholder="https://exemplo.com/imagem.jpg" 
-                                           class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                    <button type="button" id="previewImageBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                                <div class="flex justify-center mb-3">
-                                    <img id="imagePreview" class="max-h-40 rounded-lg" onerror="this.style.display='none'">
-                                </div>
-                                <div class="text-center">
-                                    <a href="https://imgur.com/upload" target="_blank" class="text-blue-500 hover:text-blue-700 text-sm">
-                                        <i class="fas fa-external-link-alt mr-1"></i> Hospedar imagem no Imgur
-                                    </a>
-                                    <p class="text-xs text-gray-500 mt-1">Insira uma URL válida para a imagem</p>
-                                </div>
+                    <div class="mb-4">
+                        <label for="productCategory" class="block text-sm font-medium text-gray-700 mb-1">Categoria*</label>
+                        <select id="productCategory" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="">Selecione...</option>
+                            <option value="ferramentas">Ferramentas</option>
+                            <option value="eletrica">Elétrica</option>
+                            <option value="tintas">Tintas</option>
+                            <option value="massas">Massas</option>
+                            <option value="hidraulica">Hidráulica</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="imageUrl" class="block text-sm font-medium text-gray-700 mb-1">URL da Imagem*</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                            <div class="image-input-container mb-3">
+                                <input type="url" id="imageUrl" placeholder="https://exemplo.com/imagem.jpg" 
+                                       class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <button type="button" id="previewImageBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="flex justify-center mb-3">
+                                <img id="imagePreview" class="max-h-40 rounded-lg" onerror="this.style.display='none'">
+                            </div>
+                            <div class="text-center">
+                                <a href="https://imgur.com/upload" target="_blank" class="text-blue-500 hover:text-blue-700 text-sm">
+                                    <i class="fas fa-external-link-alt mr-1"></i> Hospedar imagem no Imgur
+                                </a>
+                                <p class="text-xs text-gray-500 mt-1">Insira uma URL válida para a imagem</p>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Full Width Actions -->
-                    <div class="md:col-span-2 flex justify-end space-x-3">
-                        <button type="button" id="cancelBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg">
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg text-sm lg:px-6 lg:text-base">
                             Cancelar
                         </button>
-                        <button type="submit" id="submitBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
-                            <i class="fas fa-save mr-2"></i>Salvar Produto
+                        <button type="submit" id="submitBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm lg:px-6 lg:text-base">
+                            <i class="fas fa-save mr-1 lg:mr-2"></i>Salvar
                         </button>
                     </div>
                 </form>
             </div>
 
             <!-- Products List -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-4">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 lg:p-6">
+                <div class="flex flex-col gap-4 mb-4">
                     <h2 class="text-lg font-bold text-gray-800">Produtos Cadastrados</h2>
-                    <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-                        <div class="relative flex-1 md:w-64">
+                    <div class="flex flex-col gap-4 w-full">
+                        <div class="relative w-full">
                             <input type="text" id="searchInput" placeholder="Pesquisar produtos..." 
                                    class="search-input w-full border border-gray-300 rounded-lg px-3 py-2 pl-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
-                        <div class="relative w-full md:w-48">
+                        <div class="relative w-full">
                             <select id="categoryFilter" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="">Todas as categorias</option>
                                 <option value="ferramentas">Ferramentas</option>
@@ -213,15 +247,15 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
+                <div class="table-responsive">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Imagem</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preço</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Imagem</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preço</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="productsTableBody" class="bg-white divide-y divide-gray-200">
@@ -284,7 +318,10 @@
         noProductsMessage: document.getElementById('noProductsMessage'),
         noSearchResults: document.getElementById('noSearchResults'),
         categoryFilter: document.getElementById('categoryFilter'),
-        searchInput: document.getElementById('searchInput')
+        searchInput: document.getElementById('searchInput'),
+        sidebar: document.querySelector('.sidebar'),
+        openSidebar: document.getElementById('openSidebar'),
+        closeSidebar: document.getElementById('closeSidebar')
     };
 
     // Estado da aplicação
@@ -323,7 +360,7 @@
             elements.imagePreview.style.display = 'none';
             elements.imagePreview.src = '';
             state.editingProductId = null;
-            elements.submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Salvar Produto';
+            elements.submitBtn.innerHTML = '<i class="fas fa-save mr-1 lg:mr-2"></i>Salvar';
             elements.formTitle.textContent = 'Cadastrar Novo Produto';
             elements.submitBtn.disabled = false;
         },
@@ -379,6 +416,10 @@
             });
 
             productOperations.renderProducts(state.filteredProducts);
+        },
+
+        toggleSidebar: () => {
+            elements.sidebar.classList.toggle('active');
         }
     };
 
@@ -387,7 +428,7 @@
         saveProduct: async (productData) => {
             try {
                 elements.submitBtn.disabled = true;
-                elements.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processando...';
+                elements.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1 lg:mr-2"></i>Processando...';
 
                 const productToSave = {
                     name: productData.name,
@@ -411,7 +452,7 @@
                 console.error('Erro ao salvar produto:', error);
                 utils.showAlert(`Erro ao salvar produto: ${error.message}`, 'error');
             } finally {
-                elements.submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Salvar Produto';
+                elements.submitBtn.innerHTML = '<i class="fas fa-save mr-1 lg:mr-2"></i>Salvar';
                 elements.submitBtn.disabled = false;
             }
         },
@@ -501,25 +542,29 @@
                 row.className = 'hover:bg-gray-50';
 
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-4 py-4 whitespace-nowrap">
                         <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/60?text=Sem+Imagem'">
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-4 py-4 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900">${product.name}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-4 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900">${utils.formatPrice(product.price)}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-4 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900">${utils.translateCategory(product.category)}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <button class="edit-btn action-btn bg-blue-500 hover:bg-blue-600 text-white mr-2" data-id="${product.id}">
-                            <i class="fas fa-edit mr-1"></i>Editar
-                        </button>
-                        <button class="delete-btn action-btn bg-red-500 hover:bg-red-600 text-white" data-id="${product.id}">
-                            <i class="fas fa-trash-alt mr-1"></i>Excluir
-                        </button>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div class="action-buttons">
+                            <button class="edit-btn action-btn bg-blue-500 hover:bg-blue-600 text-white" data-id="${product.id}" title="Editar">
+                                <i class="fas fa-edit"></i>
+                                <span class="hidden md:inline ml-1">Editar</span>
+                            </button>
+                            <button class="delete-btn action-btn bg-red-500 hover:bg-red-600 text-white" data-id="${product.id}" title="Excluir">
+                                <i class="fas fa-trash-alt"></i>
+                                <span class="hidden md:inline ml-1">Excluir</span>
+                            </button>
+                        </div>
                     </td>
                 `;
 
@@ -556,7 +601,7 @@
             elements.imagePreview.style.display = 'block';
 
             elements.formTitle.textContent = 'Editar Produto';
-            elements.submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Atualizar Produto';
+            elements.submitBtn.innerHTML = '<i class="fas fa-save mr-1 lg:mr-2"></i>Atualizar';
             
             // Rolagem suave para o formulário
             elements.productForm.scrollIntoView({ behavior: 'smooth' });
@@ -618,6 +663,10 @@
             state.currentSearch = elements.searchInput.value.trim();
             utils.filterProducts();
         });
+
+        // Menu mobile
+        elements.openSidebar.addEventListener('click', utils.toggleSidebar);
+        elements.closeSidebar.addEventListener('click', utils.toggleSidebar);
 
         // Logout (removido o redirecionamento)
         document.querySelector('[href="index.html"]').addEventListener('click', async (e) => {
