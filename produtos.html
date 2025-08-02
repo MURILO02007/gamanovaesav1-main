@@ -181,6 +181,7 @@
                         <a href="#" data-category="eletrica" class="category-link whitespace-nowrap hover:bg-orange-700 px-3 py-1 rounded">Elétrica</a>
                         <a href="#" data-category="tintas" class="category-link whitespace-nowrap hover:bg-orange-700 px-3 py-1 rounded">Tintas</a>
                         <a href="#" data-category="massas" class="category-link whitespace-nowrap hover:bg-orange-700 px-3 py-1 rounded">Massas</a>
+                        <a href="#" data-category="hidraulica" class="category-link whitespace-nowrap hover:bg-orange-700 px-3 py-1 rounded">Hidráulica</a>
                     </div>
                 </div>
             </div>
@@ -192,7 +193,7 @@
         <section class="mb-12">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">Produtos em Destaque</h2>
-                <a href="#" class="text-orange-600 hover:underline font-medium">Ver todos</a>
+                
             </div>
             
             <div id="productsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -370,7 +371,14 @@
                 <div class="p-4">
                     <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-48 object-contain mb-4">
                     <h3 class="font-semibold text-lg mb-2">${product.name}</h3>
-                    <p class="text-gray-600 text-sm mb-3">${product.category}</p>
+                    <p class="text-gray-600 text-sm mb-3">
+                        ${product.category === 'hidraulica' ? '<i class="fas fa-faucet mr-1"></i>' : ''}
+                        ${product.category === 'ferramentas' ? '<i class="fas fa-tools mr-1"></i>' : ''}
+                        ${product.category === 'eletrica' ? '<i class="fas fa-bolt mr-1"></i>' : ''}
+                        ${product.category === 'tintas' ? '<i class="fas fa-paint-roller mr-1"></i>' : ''}
+                        ${product.category === 'massas' ? '<i class="fas fa-paste mr-1"></i>' : ''}
+                        ${product.category}
+                    </p>
                     
                     <div class="flex items-center justify-between">
                         <div>
