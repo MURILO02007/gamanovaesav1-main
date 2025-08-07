@@ -71,7 +71,7 @@
             align-items: center;
             justify-content: center;
         }
-        #cartModal {
+        #cartModal, #productModal {
             transition: opacity 0.3s ease;
         }
         .category-active {
@@ -133,8 +133,29 @@
             border-top-color: #fff;
             animation: spin 1s ease-in-out infinite;
         }
+        .product-image-zoom {
+            cursor: zoom-in;
+            transition: transform 0.3s;
+        }
+        .product-image-zoom:hover {
+            transform: scale(1.02);
+        }
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        .animate-fadeOut {
+            animation: fadeOut 0.3s ease-out forwards;
         }
     </style>
 </head>
@@ -193,7 +214,6 @@
         <section class="mb-12">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">Produtos em Destaque</h2>
-                
             </div>
             
             <div id="productsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -269,6 +289,31 @@
         </div>
     </div>
 
+    <!-- Modal de Visualização do Produto -->
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
+            <button id="closeProductModal" class="absolute top-4 right-4 bg-gray-800 text-white rounded-full p-2 z-10 hover:bg-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+                <div class="flex items-center justify-center bg-gray-100 rounded-lg p-4">
+                    <img id="modalProductImage" src="" alt="Produto" class="max-h-[70vh] w-auto object-contain">
+                </div>
+                <div>
+                    <h2 id="modalProductName" class="text-2xl font-bold mb-2"></h2>
+                    <p id="modalProductCategory" class="text-gray-600 mb-4"></p>
+                    <div id="modalProductPrice" class="text-xl font-bold mb-6"></div>
+                    <p id="modalProductDescription" class="text-gray-700 mb-6"></p>
+                    <button id="modalAddToCart" class="bg-red-800 hover:bg-red-900 text-white px-6 py-3 rounded-lg font-medium transition">
+                        Adicionar ao Carrinho
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK v10 (modular) -->
     <script type="module">
     // Importar as funções necessárias do Firebase
@@ -302,10 +347,21 @@
     const cartItems = document.getElementById('cartItems');
     const cartTotal = document.getElementById('cartTotal');
     const checkoutBtn = document.getElementById('checkoutBtn');
+    
+    // Elementos do modal de produto
+    const productModal = document.getElementById('productModal');
+    const closeProductModal = document.getElementById('closeProductModal');
+    const modalProductImage = document.getElementById('modalProductImage');
+    const modalProductName = document.getElementById('modalProductName');
+    const modalProductCategory = document.getElementById('modalProductCategory');
+    const modalProductPrice = document.getElementById('modalProductPrice');
+    const modalProductDescription = document.getElementById('modalProductDescription');
+    const modalAddToCart = document.getElementById('modalAddToCart');
 
     // Variáveis globais
     let allProducts = [];
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let currentProduct = null;
 
     // Função para atualizar o ícone do carrinho
     function updateCartIcon() {
@@ -369,7 +425,9 @@
                 ${product.discount > 0 ? `<span class="discount-badge">${product.discount}% OFF</span>` : ''}
                 
                 <div class="p-4">
-                    <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-48 object-contain mb-4">
+                    <img src="${product.imageUrl}" alt="${product.name}" 
+                         class="w-full h-48 object-contain mb-4 product-image-zoom cursor-pointer"
+                         data-id="${product.id}">
                     <h3 class="font-semibold text-lg mb-2">${product.name}</h3>
                     <p class="text-gray-600 text-sm mb-3">
                         ${product.category === 'hidraulica' ? '<i class="fas fa-faucet mr-1"></i>' : ''}
@@ -399,8 +457,63 @@
             </div>
         `).join('');
 
-        // Adicionar event listeners aos botões de carrinho de forma mais robusta
+        // Adicionar event listeners aos botões de carrinho
         setupCartButtonListeners();
+        
+        // Adicionar event listeners para as imagens dos produtos
+        document.querySelectorAll('.product-image-zoom').forEach(img => {
+            img.addEventListener('click', (e) => {
+                const productId = e.currentTarget.getAttribute('data-id');
+                showProductModal(productId);
+            });
+        });
+    }
+
+    // Função para mostrar o modal do produto
+    function showProductModal(productId) {
+        const product = allProducts.find(p => p.id === productId);
+        if (!product) return;
+        
+        currentProduct = product;
+        
+        // Preencher o modal com os dados do produto
+        modalProductImage.src = product.imageUrl;
+        modalProductImage.alt = product.name;
+        modalProductName.textContent = product.name;
+        
+        // Formatar a categoria com ícone
+        let categoryIcon = '';
+        switch(product.category) {
+            case 'hidraulica': categoryIcon = '<i class="fas fa-faucet mr-1"></i>'; break;
+            case 'ferramentas': categoryIcon = '<i class="fas fa-tools mr-1"></i>'; break;
+            case 'eletrica': categoryIcon = '<i class="fas fa-bolt mr-1"></i>'; break;
+            case 'tintas': categoryIcon = '<i class="fas fa-paint-roller mr-1"></i>'; break;
+            case 'massas': categoryIcon = '<i class="fas fa-paste mr-1"></i>'; break;
+        }
+        modalProductCategory.innerHTML = `${categoryIcon}${product.category}`;
+        
+        // Formatar o preço
+        if (product.discount > 0) {
+            modalProductPrice.innerHTML = `
+                <span class="text-gray-400 line-through text-lg">R$ ${product.price.toFixed(2)}</span>
+                <span class="text-red-600 font-bold text-2xl block">R$ ${(product.price * (1 - product.discount/100)).toFixed(2)}</span>
+                <span class="text-green-600 text-sm">${product.discount}% de desconto</span>
+            `;
+        } else {
+            modalProductPrice.innerHTML = `
+                <span class="text-red-600 font-bold text-2xl">R$ ${product.price.toFixed(2)}</span>
+            `;
+        }
+        
+        // Descrição (se houver)
+        modalProductDescription.textContent = product.description || "Descrição não disponível";
+        
+        // Configurar botão de adicionar ao carrinho
+        modalAddToCart.setAttribute('data-id', product.id);
+        modalAddToCart.disabled = product.status === 'inactive';
+        
+        // Mostrar o modal
+        productModal.classList.remove('hidden');
     }
 
     // Configurar listeners para os botões de adicionar ao carrinho
@@ -653,28 +766,57 @@
         }
     });
 
+    // Modal de produto
+    closeProductModal.addEventListener('click', () => {
+        productModal.classList.add('hidden');
+    });
+
+    productModal.addEventListener('click', (e) => {
+        if (e.target === productModal) {
+            productModal.classList.add('hidden');
+        }
+    });
+
+    modalAddToCart.addEventListener('click', (e) => {
+        if (!currentProduct) return;
+        
+        const productId = e.currentTarget.getAttribute('data-id');
+        const product = allProducts.find(p => p.id === productId);
+        
+        if (!product) return;
+        
+        // Verificar se o produto já está no carrinho
+        const existingItem = cart.find(item => item.id === productId);
+        
+        if (existingItem) {
+            // Aumentar a quantidade se já estiver no carrinho
+            existingItem.quantity += 1;
+        } else {
+            // Adicionar novo item ao carrinho
+            cart.push({
+                id: product.id,
+                name: product.name,
+                price: product.discount > 0 ? (product.price * (1 - product.discount/100)) : product.price,
+                imageUrl: product.imageUrl,
+                quantity: 1
+            });
+        }
+        
+        // Atualizar localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Atualizar ícone do carrinho
+        updateCartIcon();
+        
+        // Mostrar feedback ao usuário
+        showFeedback(`${product.name} adicionado ao carrinho!`);
+        
+        // Fechar o modal (opcional)
+        productModal.classList.add('hidden');
+    });
+
     // Event delegation para os botões do carrinho
     cartItems.addEventListener('click', handleCartActions);
-
-    // Adicionar estilos para animações
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(20px); }
-        }
-        .animate-fadeIn {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-        .animate-fadeOut {
-            animation: fadeOut 0.3s ease-out forwards;
-        }
-    `;
-    document.head.appendChild(style);
 
     // Carregar os produtos quando a página carregar
     document.addEventListener('DOMContentLoaded', loadProducts);
